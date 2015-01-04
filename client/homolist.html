@@ -46,7 +46,7 @@
             this._label.textContent = item;
         };
 
-        var N = new HomoList(TestHomoListItem);
+        var N = new HomoList(function() { return new TestHomoListItem() });
         document.body.appendChild(N.elem);
         N.setModel([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]);
 

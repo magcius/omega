@@ -34,6 +34,11 @@
             return c.isValid(songID);
         });
     };
+    Library.prototype.getSongFilename = function(songID) {
+        var root = this.$data.root;
+        var song = this.getSong(songID);
+        return root + "/" + this.getString(song.path) + "/" + this.getString(song.filename);
+    }
 
     // Returns N items around i inside L. The returned
     // list is always of size N*2+1, with the middle item

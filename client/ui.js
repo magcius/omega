@@ -108,6 +108,108 @@
         this._redisplay();
     };
 
+    // Time Display -- "00:01"
+
+    function TimeDisplay() {
+        this._toplevel = document.createElement('div');
+        this._toplevel.classList.add('time-display');
+
+        this._time = document.createElement('div');
+        this._time.classList.add('time-display-time');
+        this._time.textContent = "00:00";
+        this._toplevel.appendChild(this._time);
+
+        // This is a bit fancy. We want to have the time take up the same
+        // space no matter what text is being displayed, but we don't want
+        // to hardcode a width. To do this, we have an element always
+        // showing "00:00" but with visibility: hidden on it, which pads our
+        // layout to what we want.
+        this._layoutTime = document.createElement('div');
+        this._layoutTime.classList.add('time-display-layout-time');
+        this._layoutTime.textContent = "00:00";
+        this._toplevel.appendChild(this._layoutTime);
+
+        this.elem = this._toplevel;
+    }
+    TimeDisplay.prototype.setTime = function(secs) {
+        function zfill(n) {
+            if (n >= 10)
+                return '' + n;
+            else
+                return '0' + n;
+        }
+        function getTimeString(time) {
+            var hours, mins, secs;
+
+            mins = Math.floor(time / 60)
+            secs = Math.floor(time % 60);
+
+            hours = Math.floor(mins / 60);
+            mins = Math.floor(mins % 60);
+
+            var str = zfill(mins) + ":" + zfill(secs);
+            if (hours > 0)
+                str = zfill(hours) + ":" + str;
+            return str;
+        }
+
+        this._time.textContent = getTimeString(secs);
+    };
+
+    // Playback Controls
+
+    var PLAYBACK_SYMBOLS = {
+        PLAY     : "\u25B6",
+        PAUSE    : "\u2759\u2759",
+        PREVIOUS : "\u23EA",
+        NEXT     : "\u23E9",
+    };
+
+    function PlaybackControls() {
+        this._toplevel = document.createElement('div');
+
+        this._toplevel.classList.add('playback-controls');
+
+        this._previous = document.createElement('div');
+        this._previous.classList.add('playback-control');
+        this._previous.classList.add('previous');
+        this._previous.textContent = PLAYBACK_SYMBOLS.PREVIOUS;
+        this._toplevel.appendChild(this._previous);
+
+        this._playPause = document.createElement('div');
+        this._playPause.classList.add('playback-control');
+        this._playPause.classList.add('play-pause');
+        this._playPause.textContent = PLAYBACK_SYMBOLS.PLAY;
+        this._toplevel.appendChild(this._playPause);
+
+        this._next = document.createElement('div');
+        this._next.classList.add('playback-control');
+        this._next.classList.add('next');
+        this._next.textContent = PLAYBACK_SYMBOLS.NEXT;
+        this._toplevel.appendChild(this._next);
+
+        this._times = document.createElement('div');
+        this._times.classList.add('times');
+        this._toplevel.appendChild(this._times);
+
+        this._playbackTime = new TimeDisplay();
+        this._playbackTime.elem.classList.add('playback-time');
+        this._times.appendChild(this._playbackTime.elem);
+
+        this._times.appendChild(document.createTextNode('/'));
+
+        this._durationTime = new TimeDisplay();
+        this._durationTime.elem.classList.add('duration-time');
+        this._times.appendChild(this._durationTime.elem);
+
+        this._slider = new Slider();
+        this._slider.elem.classList.add('playback-slider');
+        this._toplevel.appendChild(this._slider.elem);
+
+        this.elem = this._toplevel;
+    }
+    Signals.addSignalMethods(PlaybackControls.prototype);
+
     // Main View
 
     function MainView(library) {
@@ -120,6 +222,9 @@
 
         this._contextDisplay = new ContextDisplay(this._library);
         this._toplevel.appendChild(this._contextDisplay.elem);
+
+        this._playbackControls = new PlaybackControls();
+        this._toplevel.appendChild(this._playbackControls.elem);
 
         this.elem = this._toplevel;
     }

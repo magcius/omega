@@ -1,8 +1,95 @@
+
+html, body {
+    margin: 0;
+    padding: 0;
+
+    font: 16pt "Helvetica Neue";
+}
+
+body {
+    background: #ccc;
+}
+
 .homo-list {
     height: 600px;
     overflow: auto;
 }
 
+.slider-trough {
+    position: relative;
+    height: 10px;
+    background: #666;
+}
+
+.slider-knob {
+    position: absolute;
+    top: 0; left: 0;
+
+    height: 20px;
+    width: 10px;
+    margin-top: -5px;
+    margin-left: -5px;
+    background: #aaa;
+}
+.slider-knob:hover {
+    background: #eee;
+    box-shadow: 0px 2px black;
+}
+.slider-knob.sliding {
+    background: #fff;
+    box-shadow: 0px 2px black;
+}
+
 .song-display {
-    height: 50px;
+    height: 25px;
+}
+.song-display.nth-child(odd) {
+}
+
+.playback-controls {
+    background: #333;
+    overflow: auto;
+    height: 64px;
+    line-height: 64px;
+
+    display: flex;
+    align-items: center;
+}
+
+.playback-controls .playback-slider {
+    flex: 1;
+    padding: 0 16px;
+}
+
+.playback-control {
+    padding: 0 8px;
+    cursor: pointer;
+    color: #aaa;
+    margin-top: -4px;
+    font-size: 24pt;
+}
+
+.playback-control:hover {
+    color: #fff;
+    text-shadow: 0px 2px black;
+}
+
+.times {
+    display: flex;
+    color: #666;
+}
+
+.time-display {
+    padding: 0 8px;
+}
+.time-display-layout-time {
+    margin-top: -120%;
+    visibility: hidden;
+}
+
+.time-display.playback-time {
+    color: #666;
+}
+.time-display.duration-time {
+    color: #aaa;
 }

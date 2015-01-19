@@ -1,6 +1,8 @@
 (function(exports) {
     "use strict";
 
+    var APP_VERSION = "OMEGA v0.01";
+
     // Song Display
 
     function parseTrackNumber(trackNumber) {
@@ -411,6 +413,39 @@
 
     var driver = new Driver(window.$library);
     document.body.appendChild(driver.elem);
+
+    driver.connect('song-changed', function() {
+        function formatSongWindowTitle(songID) {
+            var library = driver.library;
+
+            function lookupList(L) {
+                if (L.length == 0)
+                    return "";
+                else
+                    return library.getString(L[0]);
+            }
+
+            function shittyPrintf(str, args) {
+                return str.replace(/%s/g, function() {
+                    return args.shift();
+                });
+            }
+
+            var song = library.getSong(songID);
+
+            var artist = lookupList(song["artist"]);
+            var album = lookupList(song["album"]);
+            var trackNumber = parseTrackNumber(lookupList(song["tracknumber"]));
+            var title = lookupList(song["title"]);
+
+            // Foobar2000 sellout mode
+            return shittyPrintf("%s - [%s #%s] %s\u00A0\u00A0\u00A0\u00A0[%s]", [artist, album, trackNumber, title, APP_VERSION]);
+        }
+
+        var songID = driver.getSong();
+        document.title = formatSongWindowTitle(songID);
+    });
+
     driver.setSong(0);
 
 })(window);

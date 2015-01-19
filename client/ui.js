@@ -3,11 +3,14 @@
 
     // Song Display
 
-    function SongDisplay(library) {
-        this._library = library;
+    function SongDisplay(driver) {
+        this._driver = driver;
 
         this._toplevel = document.createElement('div');
         this._toplevel.classList.add('song-display');
+        this._toplevel.addEventListener('dblclick', function() {
+            this._driver.setSong(this._currentSongID);
+        }.bind(this));
 
         this._song = document.createElement('div');
         this._toplevel.appendChild(this._song);
@@ -17,7 +20,7 @@
     SongDisplay.prototype.setSong = function(songID) {
         this._currentSongID = songID;
 
-        var library = this._library;
+        var library = this._driver.library;
         function lookupList(L) {
             if (L.length == 0)
                 return "";
@@ -38,7 +41,7 @@
         this.setSong(songID);
         this._toplevel.classList.toggle('active', songID == currSongID);
     };
- 
+
     // Context Switchers
 
     function ContextSwitcher(driver) {
@@ -104,7 +107,7 @@
         this._toplevel.appendChild(this._contextSwitcher.elem);
 
         this._songList = new HomoList(function() {
-            return new SongDisplay(this._driver.library);
+            return new SongDisplay(this._driver);
         }.bind(this));
         this._songList.elem.classList.add('song-list');
         this._toplevel.appendChild(this._songList.elem);

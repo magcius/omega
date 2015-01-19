@@ -354,6 +354,9 @@
     function Driver(library) {
         this.library = library;
         this.player = document.createElement('audio');
+        this.player.addEventListener('ended', function() {
+            this.nextSong();
+        }.bind(this));
 
         this._mainView = new MainView(this);
         this.elem = this._mainView.elem;

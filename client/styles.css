@@ -72,7 +72,7 @@ body {
 .song-display .song-display-playing-icon {
     padding: 0;
     text-align: center;
-    width: 24px;
+    width: 36px;
 }
 .song-display:hover .song-display-playing-icon,
 .song-display.active .song-display-playing-icon {

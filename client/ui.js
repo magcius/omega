@@ -405,13 +405,15 @@
     };
     Driver.prototype.prevSong = function() {
         // If we're more than five seconds in, then just restart.
-        if (this.player.currentTime > 2)
+        if (this.player.currentTime > 2) {
             this.player.currentTime = 0;
-        else
-            this.setSong(this._context.prev(this._songID));
+            this.player.play();
+        } else {
+            this._setSong(this._context.prev(this._songID), true);
+        }
     };
     Driver.prototype.nextSong = function() {
-        this.setSong(this._context.next(this._songID));
+        this._setSong(this._context.next(this._songID), true);
     };
 
     Signals.addSignalMethods(Driver.prototype);

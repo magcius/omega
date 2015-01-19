@@ -9,16 +9,71 @@
         return x;
     }
 
-    function Slider() {
+    function SliderBase() {
         this._toplevel = document.createElement('div');
-        this._toplevel.classList.add('slider');
-
-        this._trough = document.createElement('div');
-        this._trough.classList.add('slider-trough');
 
         this._onMouseDown = this._onMouseDown.bind(this);
         this._onMouseMove = this._onMouseMove.bind(this);
         this._onMouseUp = this._onMouseUp.bind(this);
+
+        this._constructDOM();
+
+        this._dragging = false;
+
+        this.elem = this._toplevel;
+    }
+    SliderBase.prototype._onMouseDown = function(event) {
+        window.addEventListener('mousemove', this._onMouseMove);
+        window.addEventListener('mouseup', this._onMouseUp);
+
+        this._setDragging(true);
+        this._handleDragEvent(event);
+    };
+    SliderBase.prototype._onMouseMove = function(event) {
+        this._handleDragEvent(event);
+    };
+    SliderBase.prototype._onMouseUp = function(event) {
+        this._handleDragEvent(event);
+        this._setDragging(false);
+        window.removeEventListener('mousemove', this._onMouseMove);
+        window.removeEventListener('mouseup', this._onMouseUp);
+    };
+    SliderBase.prototype._handleDragEvent = function(event) {
+        if (!this._dragging)
+            return;
+
+        var value = this._getValueFromEvent(event);
+        value = Math.min(Math.max(value, 0), 1);
+        if (this.setValue(value))
+            this.emit('value-changed', value);
+    };
+    SliderBase.prototype.getValue = function(value) {
+        return this._value;
+    };
+    SliderBase.prototype.setValue = function(value) {
+        if (this._value == value)
+            return false;
+
+        this._value = value;
+        this._updateValueDisplay();
+        return true;
+    };
+    SliderBase.prototype._setDragging = function(isDragging) {
+        this._dragging = isDragging;
+        this._updateDraggingDisplay();
+    };
+    Signals.addSignalMethods(SliderBase.prototype);
+
+    function Slider() {
+        SliderBase.call(this);
+        this.setValue(0);
+    }
+    Slider.prototype = Object.create(SliderBase.prototype);
+    Slider.prototype._constructDOM = function() {
+        this._toplevel.classList.add('slider');
+
+        this._trough = document.createElement('div');
+        this._trough.classList.add('slider-trough');
 
         this._trough.addEventListener('mousedown', this._onMouseDown);
         this._toplevel.appendChild(this._trough);
@@ -26,58 +81,57 @@
         this._knob = document.createElement('div');
         this._knob.classList.add('slider-knob');
         this._trough.appendChild(this._knob);
-
-        this._dragging = false;
-
-        this.elem = this._toplevel;
-
-        this.setValue(0);
-    }
-    Slider.prototype._onMouseDown = function(event) {
-        window.addEventListener('mousemove', this._onMouseMove);
-        window.addEventListener('mouseup', this._onMouseUp);
-
-        this._setDragging(true);
-        this._handleDragEvent(event);
     };
-    Slider.prototype._onMouseMove = function(event) {
-        this._handleDragEvent(event);
-    };
-    Slider.prototype._onMouseUp = function(event) {
-        this._handleDragEvent(event);
-        this._setDragging(false);
-        window.removeEventListener('mousemove', this._onMouseMove);
-        window.removeEventListener('mouseup', this._onMouseUp);
-    };
-    Slider.prototype._handleDragEvent = function(event) {
-        if (!this._dragging)
-            return;
-
+    Slider.prototype._getValueFromEvent = function(event) {
         var mx = event.clientX;
         var cx = getX(this._trough);
         var x = mx - cx;
         var w = this._trough.offsetWidth;
-        var value = Math.min(Math.max(x / w, 0), 1);
-        if (this.setValue(value))
-            this.emit('value-changed', value);
+        return (x / w);
     };
-    Slider.prototype.getValue = function(value) {
-        return this._value;
+    Slider.prototype._updateValueDisplay = function() {
+        this._knob.style.left = (this._value * 100) + '%';
     };
-    Slider.prototype.setValue = function(value) {
-        if (this._value == value)
-            return false;
-
-        this._value = value;
-        this._knob.style.left = (value * 100) + '%';
-        return true;
+    Slider.prototype._updateDraggingDisplay = function() {
+        this._knob.classList.toggle('sliding', this._dragging);
     };
-    Slider.prototype._setDragging = function(isDragging) {
-        this._dragging = isDragging;
-        this._knob.classList.toggle('sliding', isDragging);
-    };
-    Signals.addSignalMethods(Slider.prototype);
 
     exports.Slider = Slider;
+
+    // Volume Control
+
+    function VolumeControl() {
+        SliderBase.call(this);
+        this.setValue(1);
+    }
+    VolumeControl.prototype = Object.create(SliderBase.prototype);
+    VolumeControl.prototype._constructDOM = function() {
+        this._toplevel = document.createElement('div');
+        this._toplevel.classList.add('volume-control');
+
+        this._inside = document.createElement('div');
+        this._inside.classList.add('volume-control-inside');
+        this._toplevel.appendChild(this._inside);
+
+        this._volumeFill = document.createElement('div');
+        this._volumeFill.classList.add('volume-control-fill');
+        this._inside.appendChild(this._volumeFill);
+
+        this._toplevel.addEventListener('mousedown', this._onMouseDown);
+    };
+    VolumeControl.prototype._getValueFromEvent = function(event) {
+        var mx = event.clientX;
+        var cx = getX(this._toplevel);
+        var x = mx - cx;
+        var w = this._toplevel.offsetWidth;
+        return (x / w);
+    };
+    VolumeControl.prototype._updateValueDisplay = function() {
+        this._volumeFill.style.marginLeft = (-(1 - this._value) * 100) + '%';
+    };
+    VolumeControl.prototype._updateDraggingDisplay = function() {
+    };
+
+    exports.VolumeControl = VolumeControl;
 
 })(window);

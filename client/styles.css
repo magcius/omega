@@ -53,12 +53,26 @@ body {
     height: 30px;
     background: #c0c0c0;
     padding: 16px;
+    display: flex;
 }
 .song-display:nth-child(odd) {
     background: #ccc;
 }
 .song-display.active {
     background: #ffb300;
+}
+
+.song-display .song-display-track {
+    display: inline-block;
+    color: #666;
+    width: 2em;
+    text-align: right;
+}
+.song-display .song-display-title {
+    flex: 1;
+}
+.song-display span {
+    padding: 0 .5em;
 }
 
 .context-switchers {

@@ -3,6 +3,22 @@
 
     // Song Display
 
+    function parseTrackNumber(trackNumber) {
+        // XXX: Should this be part of the indexer instead?
+        if (!trackNumber)
+            return '';
+
+        var match;
+
+        // "02/16"
+        match = trackNumber.match(/(\d+)\/\d+/);
+        if (match)
+            trackNumber = match[1];
+
+        // Strip leading zeroes and other fun things.
+        return ''+(+trackNumber);
+    }
+
     function SongDisplay(driver) {
         this._driver = driver;
 
@@ -12,13 +28,30 @@
             this._driver.setSong(this._currentSongID);
         }.bind(this));
 
-        this._song = document.createElement('div');
-        this._toplevel.appendChild(this._song);
+        this._track = document.createElement('span');
+        this._track.classList.add('song-display-track');
+        this._toplevel.appendChild(this._track);
+
+        this._artist = document.createElement('span');
+        this._artist.classList.add('song-display-artist');
+        this._toplevel.appendChild(this._artist);
+
+        this._album = document.createElement('span');
+        this._album.classList.add('song-display-album');
+        this._toplevel.appendChild(this._album);
+
+        this._title = document.createElement('span');
+        this._title.classList.add('song-display-title');
+        this._toplevel.appendChild(this._title);
 
         this.elem = this._toplevel;
     }
     SongDisplay.prototype.setSong = function(songID) {
         this._currentSongID = songID;
+
+        // If we have no song, then just exit here.
+        if (this._currentSongID === undefined)
+            return;
 
         var library = this._driver.library;
         function lookupList(L) {
@@ -28,14 +61,19 @@
                 return library.getString(L[0]);
         }
 
-        if (this._currentSongID !== undefined) {
-            var song = library.getSong(this._currentSongID);
+        var song = library.getSong(this._currentSongID);
 
-            var title = lookupList(song["title"]);
-            this._song.textContent = title;
-        } else {
-            this._song.textContent = '';
-        }
+        var track = lookupList(song["tracknumber"]);
+        this._track.textContent = parseTrackNumber(track);
+
+        var artist = lookupList(song["artist"]);
+        this._artist.textContent = artist;
+
+        var album = lookupList(song["album"]);
+        this._album.textContent = album;
+
+        var title = lookupList(song["title"]);
+        this._title.textContent = title;
     };
     SongDisplay.prototype.setModel = function(songID, currSongID) {
         this.setSong(songID);

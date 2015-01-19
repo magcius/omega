@@ -10,8 +10,17 @@ body {
     background: #ccc;
 }
 
+.main-view {
+    display: flex;
+    height: 100vh;
+    flex-direction: column;
+}
+.main-content {
+    flex: 1;
+}
+.main-footer {}
+
 .homo-list {
-    height: 600px;
     overflow: auto;
 }
 
@@ -21,7 +30,7 @@ body {
     background: #666;
 }
 
-.slider-knob {
+.slider-knob {  
     position: absolute;
     top: 0; left: 0;
 
@@ -41,9 +50,37 @@ body {
 }
 
 .song-display {
-    height: 25px;
+    height: 30px;
+    background: #c0c0c0;
+    padding: 16px;
 }
-.song-display.nth-child(odd) {
+.song-display:nth-child(odd) {
+    background: #ccc;
+}
+.song-display.active {
+    background: #ffb300;
+}
+
+.context-switchers {
+    overflow: auto;
+    background: #333;
+    padding: 10px;
+}
+.context-switcher {
+    float: left;
+    padding: 0 6px;
+    cursor: pointer;
+    color: #aaa;
+
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+.context-switcher.active {
+    font-weight: bold;
+    color: #fff;
+    text-shadow: 0px 2px black;
 }
 
 .playback-controls {
@@ -67,6 +104,11 @@ body {
     color: #aaa;
     margin-top: -4px;
     font-size: 24pt;
+
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 .playback-control:hover {
@@ -77,6 +119,11 @@ body {
 .times {
     display: flex;
     color: #666;
+
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 .time-display {

@@ -18,6 +18,7 @@
         this._contexts = [
             new MetadataContext("artist"),
             new MetadataContext("album"),
+            new MetadataContext("path"),
             new SongsContext(),
             new SingleContext(),
         ];
@@ -51,6 +52,10 @@
         return contextL;
     }
 
+    function mod(a, b) {
+        return (a + b) % b;
+    }
+
     function Context() {}
     Context.prototype.isValid = function(songID) {
         return true;
@@ -58,12 +63,12 @@
     Context.prototype.prev = function(songID) {
         var g = this.get(songID);
         var currIdx = g[0], L = g[1];
-        return L[currIdx - 1];
+        return L[mod(currIdx - 1, L.length)];
     };
     Context.prototype.next = function(songID) {
         var g = this.get(songID);
         var currIdx = g[0], L = g[1];
-        return L[currIdx + 1];
+        return L[mod(currIdx + 1, L.length)];
     };
 
     function MetadataContext(contextKey) { this.$contextKey = contextKey; this.title = contextKey; }
@@ -84,14 +89,14 @@
     function SongsContext() {}
     SongsContext.prototype = Object.create(Context.prototype);
     SongsContext.prototype.title = "songs";
-    SongsContext.prototype.get = function(songID, start, length) {
-        return [songID, this.$library.$data.songs];
+    SongsContext.prototype.get = function(songID) {
+        return [songID, range(0, this.$library.$data.songs.length)];
     };
 
     function SingleContext() {}
     SingleContext.prototype = Object.create(Context.prototype);
     SingleContext.prototype.title = "single";
-    SingleContext.prototype.get = function(songID, start, length) {
+    SingleContext.prototype.get = function(songID) {
         return [0, [songID]];
     };
 

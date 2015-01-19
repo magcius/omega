@@ -22,25 +22,25 @@
     function SongDisplay(driver) {
         this._driver = driver;
 
-        this._toplevel = document.createElement('div');
+        this._toplevel = document.createElement('tr');
         this._toplevel.classList.add('song-display');
         this._toplevel.addEventListener('dblclick', function() {
             this._driver.setSong(this._currentSongID);
         }.bind(this));
 
-        this._track = document.createElement('span');
+        this._track = document.createElement('td');
         this._track.classList.add('song-display-track');
         this._toplevel.appendChild(this._track);
 
-        this._artist = document.createElement('span');
+        this._artist = document.createElement('td');
         this._artist.classList.add('song-display-artist');
         this._toplevel.appendChild(this._artist);
 
-        this._album = document.createElement('span');
+        this._album = document.createElement('td');
         this._album.classList.add('song-display-album');
         this._toplevel.appendChild(this._album);
 
-        this._title = document.createElement('span');
+        this._title = document.createElement('td');
         this._title.classList.add('song-display-title');
         this._toplevel.appendChild(this._title);
 

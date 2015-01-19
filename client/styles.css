@@ -49,11 +49,15 @@ body {
     box-shadow: 0px 2px black;
 }
 
-.song-display {
+.song-list table {
+    width: 100%;
+    border-collapse: collapse;
+}
+.song-display, .song-display td {
     height: 30px;
+}
+.song-display {
     background: #c0c0c0;
-    padding: 16px;
-    display: flex;
 }
 .song-display:nth-child(odd) {
     background: #ccc;
@@ -63,16 +67,15 @@ body {
 }
 
 .song-display .song-display-track {
-    display: inline-block;
     color: #666;
     width: 2em;
     text-align: right;
 }
 .song-display .song-display-title {
-    flex: 1;
+    text-align: left;
 }
-.song-display span {
-    padding: 0 .5em;
+.song-display td {
+    padding: 16px .5em;
 }
 
 .context-switchers {

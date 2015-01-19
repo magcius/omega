@@ -10,6 +10,9 @@
         this._inside = document.createElement('div');
         this._toplevel.appendChild(this._inside);
 
+        this._table = document.createElement('table');
+        this._inside.appendChild(this._table);
+
         this._toplevel.addEventListener('scroll', function() {
             this._redisplay();
         }.bind(this));
@@ -29,13 +32,13 @@
         while (this._items.length < n) {
             var templ = this._template();
             this._items.push(templ);
-            this._inside.appendChild(templ.elem);
+            this._table.appendChild(templ.elem);
         }
     };
     HomoList.prototype._ensureItems = function(n) {
         this._ensureMinItems(n);
         while (this._items.length > n) {
-            this._inside.removeChild(this._items.shift().elem);
+            this._table.removeChild(this._items.shift().elem);
         }
     };
     HomoList.prototype._getHeightPerElem = function() {

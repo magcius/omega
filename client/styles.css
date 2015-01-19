@@ -3,7 +3,8 @@ html, body {
     margin: 0;
     padding: 0;
 
-    font: 16pt "Helvetica Neue";
+    font-size: 16pt;
+    font-family: "Helvetica Neue", "Helvetica", "Segoe UI", "Arial", sans-serif;
 }
 
 body {
@@ -69,14 +70,13 @@ body {
 }
 
 .song-display .song-display-playing-icon {
-    color: transparent;
     padding: 0;
     text-align: center;
-    width: 1.5em;
+    width: 24px;
 }
 .song-display:hover .song-display-playing-icon,
 .song-display.active .song-display-playing-icon {
-    color: rgba(0, 0, 0, 0.2);
+    background: url(icon_song-display-playing-indicator.svg) center center no-repeat;
 }
 .song-display .song-display-track {
     color: rgba(0, 0, 0, 0.4);
@@ -128,21 +128,38 @@ body {
 }
 
 .playback-control {
-    padding: 0 8px;
     cursor: pointer;
-    color: #aaa;
-    margin-top: -4px;
-    font-size: 24pt;
+    width: 48px;
+    height: 48px;
 
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
 }
-
-.playback-control:hover {
-    color: #fff;
-    text-shadow: 0px 2px black;
+.playback-control.play {
+    background: url('icon_playback-control-play-up.svg') no-repeat;
+}
+.playback-control.play:hover {
+    background: url('icon_playback-control-play-hover.svg') no-repeat;
+}
+.playback-control.pause {
+    background: url('icon_playback-control-pause-up.svg') no-repeat;
+}
+.playback-control.pause:hover {
+    background: url('icon_playback-control-pause-hover.svg') no-repeat;
+}
+.playback-control.prev {
+    background: url('icon_playback-control-prev-up.svg') no-repeat;
+}
+.playback-control.prev:hover {
+    background: url('icon_playback-control-prev-hover.svg') no-repeat;
+}
+.playback-control.next {
+    background: url('icon_playback-control-next-up.svg') no-repeat;
+}
+.playback-control.next:hover {
+    background: url('icon_playback-control-next-hover.svg') no-repeat;
 }
 
 .times {

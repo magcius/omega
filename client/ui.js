@@ -3,13 +3,6 @@
 
     // Song Display
 
-    var PlaybackSymbols = {
-        PLAY     : "\u25B6",
-        PAUSE    : "\u2759\u2759",
-        PREVIOUS : "\u23EA",
-        NEXT     : "\u23E9",
-    };
-
     function parseTrackNumber(trackNumber) {
         // XXX: Should this be part of the indexer instead?
         if (!trackNumber)
@@ -37,7 +30,6 @@
 
         this._playingIcon = document.createElement('td');
         this._playingIcon.classList.add('song-display-playing-icon');
-        this._playingIcon.textContent = PlaybackSymbols.PLAY;
         this._toplevel.appendChild(this._playingIcon);
 
         this._track = document.createElement('td');
@@ -241,8 +233,7 @@
 
         this._previous = document.createElement('div');
         this._previous.classList.add('playback-control');
-        this._previous.classList.add('previous');
-        this._previous.textContent = PlaybackSymbols.PREVIOUS;
+        this._previous.classList.add('prev');
         this._previous.addEventListener('click', function() {
             this._driver.prevSong();
         }.bind(this));
@@ -259,7 +250,6 @@
         this._next = document.createElement('div');
         this._next.classList.add('playback-control');
         this._next.classList.add('next');
-        this._next.textContent = PlaybackSymbols.NEXT;
         this._next.addEventListener('click', function() {
             this._driver.nextSong();
         }.bind(this));
@@ -312,10 +302,8 @@
         this._slider.setValue(sliderTime);
     };
     PlaybackControls.prototype._updateState = function() {
-        if (this._driver.player.paused)
-            this._playPause.textContent = PlaybackSymbols.PLAY;
-        else
-            this._playPause.textContent = PlaybackSymbols.PAUSE;
+        this._playPause.classList.toggle('play', this._driver.player.paused);
+        this._playPause.classList.toggle('pause', !this._driver.player.paused);
     };
 
     // Main View

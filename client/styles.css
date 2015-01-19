@@ -58,16 +58,28 @@ body {
 }
 .song-display {
     background: #c0c0c0;
+    cursor: pointer;
 }
 .song-display:nth-child(odd) {
     background: #ccc;
 }
 .song-display.active {
     background: #ffb300;
+    cursor: default;
 }
 
+.song-display .song-display-playing-icon {
+    color: transparent;
+    padding: 0;
+    text-align: center;
+    width: 1.5em;
+}
+.song-display:hover .song-display-playing-icon,
+.song-display.active .song-display-playing-icon {
+    color: rgba(0, 0, 0, 0.2);
+}
 .song-display .song-display-track {
-    color: #666;
+    color: rgba(0, 0, 0, 0.4);
     width: 2em;
     text-align: right;
 }

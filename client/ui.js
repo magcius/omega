@@ -3,6 +3,13 @@
 
     // Song Display
 
+    var PlaybackSymbols = {
+        PLAY     : "\u25B6",
+        PAUSE    : "\u2759\u2759",
+        PREVIOUS : "\u23EA",
+        NEXT     : "\u23E9",
+    };
+
     function parseTrackNumber(trackNumber) {
         // XXX: Should this be part of the indexer instead?
         if (!trackNumber)
@@ -24,9 +31,14 @@
 
         this._toplevel = document.createElement('tr');
         this._toplevel.classList.add('song-display');
-        this._toplevel.addEventListener('dblclick', function() {
-            this._driver.setSong(this._currentSongID);
+        this._toplevel.addEventListener('click', function() {
+            this._driver.playSong(this._currentSongID);
         }.bind(this));
+
+        this._playingIcon = document.createElement('td');
+        this._playingIcon.classList.add('song-display-playing-icon');
+        this._playingIcon.textContent = PlaybackSymbols.PLAY;
+        this._toplevel.appendChild(this._playingIcon);
 
         this._track = document.createElement('td');
         this._track.classList.add('song-display-track');
@@ -220,13 +232,6 @@
 
     // Playback Controls
 
-    var PlaybackSymbols = {
-        PLAY     : "\u25B6",
-        PAUSE    : "\u2759\u2759",
-        PREVIOUS : "\u23EA",
-        NEXT     : "\u23E9",
-    };
-
     function PlaybackControls(driver) {
         this._driver = driver;
 
@@ -365,7 +370,7 @@
     Driver.prototype.getContext = function() {
         return this._context;
     };
-    Driver.prototype.setSong = function(songID) {
+    Driver.prototype._setSong = function(songID, forcePlaying) {
         if (this._songID  == songID)
             return;
 
@@ -377,16 +382,21 @@
         if (!this._context)
             this.setContext(this.library.getValidContexts(songID)[0]);
 
-        var wasPaused = this.player.paused;
+        var shouldPlay = !this.player.paused || forcePlaying;
         var filename = this.library.getSongFilename(songID);
         this.player.src = filenameToURI(filename);
-        if (!wasPaused)
+        if (shouldPlay)
             this.player.play();
+    };
+    Driver.prototype.setSong = function(songID) {
+        this._setSong(songID, false);
+    };
+    Driver.prototype.playSong = function(songID) {
+        this._setSong(songID, true);
     };
     Driver.prototype.getSong = function() {
         return this._songID;
     };
-
     Driver.prototype.playPause = function() {
         if (this.player.paused)
             this.player.play();

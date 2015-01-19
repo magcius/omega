@@ -224,6 +224,85 @@
         this._time.textContent = getTimeString(secs);
     };
 
+    // Volume Control
+
+    function getX(elem) {
+        var x = 0;
+        do {
+            x += elem.offsetLeft;
+        } while ((elem = elem.offsetParent));
+        return x;
+    }
+
+    function VolumeControl() {
+        this._toplevel = document.createElement('div');
+        this._toplevel.classList.add('volume-control');
+
+        this._inside = document.createElement('div');
+        this._inside.classList.add('volume-control-inside');
+        this._toplevel.appendChild(this._inside);
+
+        this._volumeFill = document.createElement('div');
+        this._volumeFill.classList.add('volume-control-fill');
+        this._inside.appendChild(this._volumeFill);
+
+        this._onMouseDown = this._onMouseDown.bind(this);
+        this._onMouseMove = this._onMouseMove.bind(this);
+        this._onMouseUp = this._onMouseUp.bind(this);
+
+        this._toplevel.addEventListener('mousedown', this._onMouseDown);
+
+        this._dragging = false;
+
+        this.elem = this._toplevel;
+
+        this.setValue(.5);
+    }
+    VolumeControl.prototype._handleDragEvent = function(event) {
+        if (!this._dragging)
+            return;
+
+        var mx = event.clientX;
+        var cx = getX(this._toplevel);
+        var x = mx - cx;
+        var w = this._toplevel.offsetWidth;
+        var value = Math.min(Math.max(x / w, 0), 1);
+        if (this.setValue(value))
+            this.emit('value-changed', value);
+    };
+    VolumeControl.prototype.getValue = function(value) {
+        return this._value;
+    };
+    VolumeControl.prototype.setValue = function(value) {
+        if (this._value == value)
+            return false;
+
+        this._value = value;
+        this._volumeFill.style.marginLeft = (-(1 - value) * 100) + '%';
+        return true;
+    };
+    VolumeControl.prototype._onMouseDown = function(event) {
+        window.addEventListener('mousemove', this._onMouseMove);
+        window.addEventListener('mouseup', this._onMouseUp);
+
+        this._setDragging(true);
+        this._handleDragEvent(event);
+    };
+    VolumeControl.prototype._setDragging = function(isDragging) {
+        this._dragging = isDragging;
+        this._toplevel.classList.toggle('sliding', isDragging);
+    };
+    VolumeControl.prototype._onMouseMove = function(event) {
+        this._handleDragEvent(event);
+    };
+    VolumeControl.prototype._onMouseUp = function(event) {
+        this._handleDragEvent(event);
+        this._setDragging(false);
+        window.removeEventListener('mousemove', this._onMouseMove);
+        window.removeEventListener('mouseup', this._onMouseUp);
+    };
+    Signals.addSignalMethods(VolumeControl.prototype);
+
     // Playback Controls
 
     function PlaybackControls(driver) {
@@ -278,6 +357,13 @@
             this._driver.player.currentTime = (v * this._driver.player.duration);
         }.bind(this));
         this._toplevel.appendChild(this._slider.elem);
+
+        this._volumeControl = new VolumeControl();
+        this._volumeControl.connect('value-changed', function() {
+            var v = this._volumeControl.getValue();
+            this._driver.player.volume = v;
+        }.bind(this));
+        this._toplevel.appendChild(this._volumeControl.elem);
 
         this.elem = this._toplevel;
 

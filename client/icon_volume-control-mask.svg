@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="32" viewBox="0 0 64 32">
+<!--
+	<g fill="blue">
+		<rect x="0"  y="0" width="12" height="32" />
+		<rect x="17" y="0" width="12" height="32" />
+		<rect x="35" y="0" width="12" height="32" />
+		<rect x="52" y="0" width="12" height="32" />
+	</g>
+	<path fill="red" d="M 0 32 h64v-32z"/>
+-->
+
+	<clipPath id="mask">
+		<path d="M 0  32 h12v-6 z"/>
+		<path d="M 17 32 h12v-14.5 l-12 6 z"/>
+		<path d="M 35 32 h12v-23.5 l-12 6 z"/>
+		<path d="M 52 32 h12v-32 l-12 6 z"/>
+	</clipPath>
+</svg>

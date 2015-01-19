@@ -186,3 +186,22 @@ body {
 .time-display.duration-time {
     color: #aaa;
 }
+
+.volume-control {
+    width: 64px;
+    margin-right: 16px;
+}
+
+.volume-control-inside {
+    width: 64px;
+    height: 32px;
+    overflow: hidden;
+    background: #aaa;
+    clip-path: url(icon_volume-control-mask.svg#mask);
+}
+
+.volume-control-fill {
+    background: #fff;
+    width: 64px;
+    height: 32px;
+}

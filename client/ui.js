@@ -446,6 +446,8 @@
     NavigationManager.prototype._updateHash = function() {
         var song = this._driver.getSong();
         var context = this._driver.getContext();
+        if (!song || !context)
+            return;
         window.location.hash = song + '/' + context.title;
     };
     NavigationManager.prototype._onHashChange = function() {

@@ -434,7 +434,7 @@
 
         this._driver.connect('song-changed', this._updateHash.bind(this));
         this._driver.connect('context-changed', this._updateHash.bind(this));
-        window.addEventListener('onhashchange', this._onHashChange.bind(this));
+        window.addEventListener('hashchange', this._onHashChange.bind(this));
 
         if (window.location.hash)
             this._onHashChange();

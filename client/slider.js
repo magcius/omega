@@ -43,20 +43,18 @@
             return;
 
         var value = this._getValueFromEvent(event);
-        value = Math.min(Math.max(value, 0), 1);
-        if (this.setValue(value))
-            this.emit('value-changed', value);
+        this.setValue(value);
     };
     SliderBase.prototype.getValue = function(value) {
         return this._value;
     };
     SliderBase.prototype.setValue = function(value) {
         if (this._value == value)
-            return false;
+            return;
 
-        this._value = value;
+        this._value = Math.min(Math.max(value, 0), 1);
+        this.emit('value-changed', value);
         this._updateValueDisplay();
-        return true;
     };
     SliderBase.prototype._setDragging = function(isDragging) {
         this._dragging = isDragging;
@@ -118,6 +116,8 @@
         this._inside.appendChild(this._volumeFill);
 
         this._toplevel.addEventListener('mousedown', this._onMouseDown);
+        this._toplevel.addEventListener('mousewheel', this._onMouseWheel.bind(this));
+        this._toplevel.addEventListener('DOMMouseScroll', this._onMouseWheel.bind(this));
     };
     VolumeControl.prototype._getValueFromEvent = function(event) {
         var mx = event.clientX;
@@ -130,6 +130,13 @@
         this._volumeFill.style.marginLeft = (-(1 - this._value) * 100) + '%';
     };
     VolumeControl.prototype._updateDraggingDisplay = function() {
+    };
+    VolumeControl.prototype._onMouseWheel = function(event) {
+        var delta = event.wheelDelta || -event.detail;
+        if (delta > 0)
+            this.setValue(this._value + 0.05);
+        else
+            this.setValue(this._value - 0.05);
     };
 
     exports.VolumeControl = VolumeControl;

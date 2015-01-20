@@ -13,8 +13,13 @@
         this._table = document.createElement('table');
         this._inside.appendChild(this._table);
 
+        this._scrollTimeout = 0;
+
         this._toplevel.addEventListener('scroll', function() {
-            this._redisplay();
+            if (this._scrollTimeout)
+                return;
+
+            this._scrollTimeout = setTimeout(this._redisplay.bind(this), 10);
         }.bind(this));
 
         this._template = template;
@@ -71,6 +76,8 @@
                 item.$hasData = true;
             }
         }
+
+        this._scrollTimeout = 0;
     };
     HomoList.prototype.centerItem = function(idx) {
         var heightPerElem = this._getHeightPerElem();

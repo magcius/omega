@@ -11,14 +11,11 @@ body {
     background: #ccc;
 }
 
-.main-view {
-}
-.main-content {
-}
-.main-footer {}
-
 .homo-list {
     overflow: auto;
+}
+.homo-list tr {
+    white-space: nowrap;
 }
 
 .slider-trough {

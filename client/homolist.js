@@ -18,7 +18,7 @@
         this._toplevel.addEventListener('scroll', function() {
             if (this._scrollTimeout)
                 clearTimeout(this._scrollTimeout);
-            this._scrollTimeout = setTimeout(this._redisplay.bind(this), 100);
+            this._scrollTimeout = setTimeout(this._redisplay.bind(this), 20);
         }.bind(this));
 
         this._template = template;

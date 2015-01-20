@@ -194,6 +194,7 @@ body {
 
 .volume-control {
     width: 64px;
+    margin-right: 16px;
 }
 
 .volume-control-inside {

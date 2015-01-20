@@ -27,10 +27,12 @@
         this._model = model;
         this._additionalData = additionalData;
         this._resize();
+        this._redisplay(true);
     };
     HomoList.prototype._ensureMinItems = function(n) {
         while (this._items.length < n) {
             var templ = this._template();
+            templ.$hasData = false;
             this._items.push(templ);
             this._table.appendChild(templ.elem);
         }
@@ -49,9 +51,8 @@
         var heightPerElem = this._getHeightPerElem();
         var insideHeight = heightPerElem * this._model.length;
         this._inside.style.height = insideHeight + 'px';
-        this._redisplay();
     };
-    HomoList.prototype._redisplay = function() {
+    HomoList.prototype._redisplay = function(newModel) {
         var heightPerElem = this._getHeightPerElem();
 
         var containerY = this._toplevel.scrollTop;
@@ -63,11 +64,13 @@
         this._ensureMinItems(lastItem);
         this._ensureMaxItems(this._model.length);
 
-        for (var i = firstItem; i < lastItem; i++)
-            this._updateItem(i);
-    };
-    HomoList.prototype._updateItem = function(i) {
-        this._items[i].setModel(this._model[i], this._additionalData);
+        for (var i = firstItem; i < lastItem; i++) {
+            var item = this._items[i];
+            if (newModel || !item.$hasData) {
+                item.setModel(this._model[i], this._additionalData);
+                item.$hasData = true;
+            }
+        }
     };
     HomoList.prototype.centerItem = function(idx) {
         var heightPerElem = this._getHeightPerElem();

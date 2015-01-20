@@ -61,7 +61,7 @@
 
         var library = this._driver.library;
         function lookupList(L) {
-            if (L.length == 0)
+            if (!L || L.length == 0)
                 return "";
             else
                 return library.getString(L[0]);
@@ -370,7 +370,7 @@
     Driver.prototype.getContext = function() {
         return this._context;
     };
-    Driver.prototype._setSong = function(songID, forcePlaying) {
+    Driver.prototype._setSongInPlayer = function(songID) {
         if (this._songID  == songID)
             return;
 
@@ -382,9 +382,12 @@
         if (!this._context)
             this.setContext(this.library.getValidContexts(songID)[0]);
 
-        var shouldPlay = !this.player.paused || forcePlaying;
         var filename = this.library.getSongFilename(songID);
         this.player.src = filenameToURI(filename);
+    };
+    Driver.prototype._setSong = function(songID, forcePlaying) {
+        var shouldPlay = !this.player.paused || forcePlaying;
+        this._setSongInPlayer(songID);
         if (shouldPlay)
             this.player.play();
     };
@@ -418,41 +421,57 @@
 
     Signals.addSignalMethods(Driver.prototype);
 
-    var driver = new Driver(window.$library);
-    document.body.appendChild(driver.elem);
+    function fb2kLoaded(buffer) {
+        var library = libraryFromFB2K(buffer);
+        var driver = new Driver(library);
+        document.body.appendChild(driver.elem);
 
-    driver.connect('song-changed', function() {
-        function formatSongWindowTitle(songID) {
-            var library = driver.library;
+        driver.connect('song-changed', function() {
+            function formatSongWindowTitle(songID) {
+                var library = driver.library;
 
-            function lookupList(L) {
-                if (L.length == 0)
-                    return "";
-                else
-                    return library.getString(L[0]);
+                function lookupList(L) {
+                    if (!L || L.length == 0)
+                        return "";
+                    else
+                        return library.getString(L[0]);
+                }
+
+                function shittyPrintf(str, args) {
+                    return str.replace(/%s/g, function() {
+                        return args.shift();
+                    });
+                }
+
+                var song = library.getSong(songID);
+
+                var artist = lookupList(song["artist"]);
+                var album = lookupList(song["album"]);
+                var trackNumber = parseTrackNumber(lookupList(song["tracknumber"]));
+                var title = lookupList(song["title"]);
+
+                // Foobar2000 sellout mode
+                return shittyPrintf("%s - [%s #%s] %s\u00A0\u00A0\u00A0\u00A0[%s]", [artist, album, trackNumber, title, APP_VERSION]);
             }
 
-            function shittyPrintf(str, args) {
-                return str.replace(/%s/g, function() {
-                    return args.shift();
-                });
-            }
+            var songID = driver.getSong();
+            document.title = formatSongWindowTitle(songID);
+        });
 
-            var song = library.getSong(songID);
+        driver.setSong(0);
+    }
 
-            var artist = lookupList(song["artist"]);
-            var album = lookupList(song["album"]);
-            var trackNumber = parseTrackNumber(lookupList(song["tracknumber"]));
-            var title = lookupList(song["title"]);
+    function fetch(path) {
+        var request = new XMLHttpRequest();
+        request.open("GET", path, true);
+        request.responseType = "arraybuffer";
+        request.send();
+        return request;
+    }
 
-            // Foobar2000 sellout mode
-            return shittyPrintf("%s - [%s #%s] %s\u00A0\u00A0\u00A0\u00A0[%s]", [artist, album, trackNumber, title, APP_VERSION]);
-        }
-
-        var songID = driver.getSong();
-        document.title = formatSongWindowTitle(songID);
-    });
-
-    driver.setSong(0);
+    var req = fetch("database.dat");
+    req.onload = function() {
+        fb2kLoaded(req.response);
+    };
 
 })(window);

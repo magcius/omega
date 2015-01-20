@@ -12,12 +12,8 @@ body {
 }
 
 .main-view {
-    display: flex;
-    height: 100vh;
-    flex-direction: column;
 }
 .main-content {
-    flex: 1;
 }
 .main-footer {}
 
@@ -50,6 +46,13 @@ body {
     box-shadow: 0px 2px black;
 }
 
+.song-list {
+    position: absolute;
+    top: 64px;
+    bottom: 64px;
+    left: 0;
+    right: 0;
+}
 .song-list table {
     width: 100%;
     border-collapse: collapse;
@@ -93,7 +96,8 @@ body {
 .context-switchers {
     overflow: auto;
     background: #333;
-    padding: 10px;
+    height: 64px;
+    line-height: 64px;
 }
 .context-switcher {
     float: left;
@@ -120,6 +124,10 @@ body {
 
     display: flex;
     align-items: center;
+
+    position: absolute;
+    bottom: 0;
+    left: 0; right: 0;
 }
 
 .playback-controls .playback-slider {
@@ -189,7 +197,6 @@ body {
 
 .volume-control {
     width: 64px;
-    margin-right: 16px;
 }
 
 .volume-control-inside {

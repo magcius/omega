@@ -57,8 +57,9 @@
                 throw new Error("has folders");
 
             if (numTracks > 0) {
-                var entryIdx = db.fileEntries.push({ trackPos: trackPos, path: path }) - 1;
-                db.path[pathID].push(entryIdx);
+                var fileEntry = { trackPos: trackPos, path: path, pathID: pathID };
+                var entryIdx = db.fileEntries.push(fileEntry) - 1;
+                fileEntry.pathIdx = db.path[pathID].push(entryIdx) - 1;
             }
         }
 
@@ -214,7 +215,7 @@
         var rootURI = readString(stream, pos, rootURILength);
         pos += rootURILength;
 
-        db._tmp = { _pathID: 0 };
+        db._tmp = { pathID: 0 };
         pos = readFolderTree(stream, pos, db, '');
         delete db._tmp;
 

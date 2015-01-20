@@ -14,6 +14,7 @@
         this._contexts = [
             new MetadataContext("artist"),
             new MetadataContext("album"),
+            new PathContext(),
             new SongsContext(),
             new SingleContext(),
         ];
@@ -82,6 +83,17 @@
         var contextIdx = contextPair[1];
         var L = this.$library.$data[this.$contextKey][contextId][1];
         return [contextIdx, L];
+    };
+
+    function PathContext() {}
+    PathContext.prototype = Object.create(Context.prototype);
+    PathContext.prototype.title = "path";
+    PathContext.prototype.get = function(songID) {
+        var fileEntry = this.$library.$data.fileEntries[songID];
+        var pathID = fileEntry.pathID;
+        var pathIdx = fileEntry.pathIdx;
+        var L = this.$library.$data.path[pathID];
+        return [pathIdx, L];
     };
 
     function SongsContext() {}

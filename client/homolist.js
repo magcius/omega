@@ -35,8 +35,7 @@
             this._table.appendChild(templ.elem);
         }
     };
-    HomoList.prototype._ensureItems = function(n) {
-        this._ensureMinItems(n);
+    HomoList.prototype._ensureMaxItems = function(n) {
         while (this._items.length > n) {
             this._table.removeChild(this._items.shift().elem);
         }
@@ -61,7 +60,8 @@
         var firstItem = Math.floor(containerY / heightPerElem);
         var lastItem = Math.min(Math.ceil((containerY + containerHeight) / heightPerElem), this._model.length);
 
-        this._ensureItems(lastItem);
+        this._ensureMinItems(lastItem);
+        this._ensureMaxItems(this._model.length);
 
         for (var i = firstItem; i < lastItem; i++)
             this._updateItem(i);

@@ -59,6 +59,8 @@
     HomoList.prototype._redisplay = function(newModel) {
         var heightPerElem = this._getHeightPerElem();
 
+        this._ensureMaxItems(this._model.length);
+
         var containerY = this._toplevel.scrollTop;
         var containerHeight = this._toplevel.offsetHeight;
 
@@ -66,7 +68,6 @@
         var lastItem = Math.min(Math.ceil((containerY + containerHeight) / heightPerElem), this._model.length);
 
         this._ensureMinItems(lastItem);
-        this._ensureMaxItems(this._model.length);
 
         for (var i = firstItem; i < lastItem; i++) {
             var item = this._items[i];

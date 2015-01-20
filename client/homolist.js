@@ -34,17 +34,31 @@
         this._redisplay(true);
     };
     HomoList.prototype._ensureMinItems = function(n) {
+        if (this._items.length >= n)
+            return;
+
+        var frag = document.createDocumentFragment();
         while (this._items.length < n) {
             var templ = this._template();
             templ.$hasData = false;
             this._items.push(templ);
-            this._table.appendChild(templ.elem);
+            frag.appendChild(templ.elem);
         }
+        this._table.appendChild(frag);
     };
     HomoList.prototype._ensureMaxItems = function(n) {
-        while (this._items.length > n) {
-            this._table.removeChild(this._items.shift().elem);
-        }
+        var extraItems = (this._items.length - n);
+        if (extraItems <= 0)
+            return;
+
+        this._items.length = n;
+
+        this._table.innerHTML = '';
+        var frag = document.createDocumentFragment();
+        this._items.forEach(function(item) {
+            frag.appendChild(item.elem);
+        });
+        this._table.appendChild(frag);
     };
     HomoList.prototype._getHeightPerElem = function() {
         this._ensureMinItems(1);

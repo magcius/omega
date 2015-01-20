@@ -7,32 +7,26 @@
     // This seems to be consistent for all databases I generate.
     var fb2kMagic = "\xF9\x8C\x6F\x91\x83\x04\x3E\x4B\x9A\x62\x80\xDF\xA6\xD0\x8C\x81";
 
+    var utf8Decoder = new TextDecoder('utf8', { fatal: true });
+
     function readString(stream, pos, length) {
-        var L = [];
-        while (length--)
-            L.push(String.fromCharCode(stream.getUint8(pos++)));
-        return L.join('');
-    }
-    function readPString(stream, pos) {
-        var length = stream.getUint32(pos, true);
-        return readString(stream, pos + 4, length);
+        return utf8Decoder.decode(new DataView(stream.buffer, pos, length));
     }
     function skipPString(stream, pos) {
         var length = stream.getUint32(pos, true);
         return pos + 4 + length;
     }
     function read0String(stream, pos) {
-        var L = [];
+        var length = 0;
         while (true) {
-            var c = stream.getUint8(pos++);
+            var c = stream.getUint8(pos + length++);
             if (c == 0)
                 break;
-            L.push(String.fromCharCode(c));
 
-            if (L.length > 255)
+            if (length > 255)
                 AAA
         }
-        return L.join('');
+        return readString(stream, pos, --length);
     }
 
     function readFolderTree(stream, pos, db, path) {
@@ -71,8 +65,10 @@
         var numFolders = stream.getUint32(pos, true);
         pos += 4;
         while (numFolders-- > 0) {
-            var subFolderName = readPString(stream, pos);
-            pos += 4 + subFolderName.length;
+            var subFolderLength = stream.getUint32(pos, true);
+            pos += 4;
+            var subFolderName = readString(stream, pos, subFolderLength);
+            pos += subFolderLength;
             pos = readFolderTree(stream, pos, db, path + '/' + subFolderName);
         }
         return pos;
@@ -205,11 +201,20 @@
         var db = { fileEntries: [], songs: [], artist: {}, album: {}, path: [] };
         db.stream = stream;
 
-        var rootFolder = readPString(stream, 0x14);
-        var rootURI = readPString(stream, 0x18 + rootFolder.length + 0x38);
+        var pos = 0x14;
+        var rootFolderLength = stream.getUint32(pos, true);
+        pos += 4;
+        var rootFolder = readString(stream, pos, rootFolderLength);
+        pos += rootFolderLength;
+
+        pos += 0x38; // garbage we don't care about
+
+        var rootURILength = stream.getUint32(pos, true);
+        pos += 4;
+        var rootURI = readString(stream, pos, rootURILength);
+        pos += rootURILength;
 
         db._tmp = { _pathID: 0 };
-        var pos = 0x18 + rootFolder.length + 0x3C + rootURI.length;
         pos = readFolderTree(stream, pos, db, '');
         delete db._tmp;
 
@@ -226,7 +231,8 @@
         };
         db.getSongFilename = function(idx) {
             var fileEntry = db.fileEntries[idx];
-            var filename = readPString(stream, fileEntry.trackPos);
+            var fileEntryLength = stream.getUint32(fileEntry.trackPos, true);
+            var filename = readString(stream, fileEntry.trackPos + 4, fileEntryLength);
             return rootFolder + fileEntry.path + '/' + filename;
         };
 

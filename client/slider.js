@@ -43,18 +43,22 @@
             return;
 
         var value = this._getValueFromEvent(event);
-        this.setValue(value);
+        this._setValue(value);
     };
     SliderBase.prototype.getValue = function(value) {
         return this._value;
     };
+    SliderBase.prototype._setValue = function(value) {
+        if (this.setValue(value))
+            this.emit('value-changed', value);
+    };
     SliderBase.prototype.setValue = function(value) {
         if (this._value == value)
-            return;
+            return false;
 
         this._value = Math.min(Math.max(value, 0), 1);
-        this.emit('value-changed', value);
         this._updateValueDisplay();
+        return true;
     };
     SliderBase.prototype._setDragging = function(isDragging) {
         this._dragging = isDragging;
@@ -134,9 +138,9 @@
     VolumeControl.prototype._onMouseWheel = function(event) {
         var delta = event.wheelDelta || -event.detail;
         if (delta > 0)
-            this.setValue(this._value + 0.05);
+            this._setValue(this._value + 0.05);
         else
-            this.setValue(this._value - 0.05);
+            this._setValue(this._value - 0.05);
     };
 
     exports.VolumeControl = VolumeControl;

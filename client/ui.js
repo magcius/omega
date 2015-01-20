@@ -53,6 +53,9 @@
         this.elem = this._toplevel;
     }
     SongDisplay.prototype.setSong = function(songID) {
+        if (this._currentSongID == songID)
+            return;
+
         this._currentSongID = songID;
 
         // If we have no song, then just exit here.

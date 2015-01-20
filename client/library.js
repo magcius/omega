@@ -31,8 +31,8 @@
             return c.isValid(songID);
         });
     };
-    Library.prototype.getSongFilename = function(songID) {
-        return this.$data.getSongFilename(songID);
+    Library.prototype.getSongURI = function(songID) {
+        return this.$data.getSongURI(songID);
     };
     Library.prototype.getContextForName = function(contextName) {
         for (var i = 0; i < this._contexts.length; i++)

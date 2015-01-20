@@ -230,11 +230,11 @@
         db.readString = function(idx) {
             return readStringDB(stream, idx, db);
         };
-        db.getSongFilename = function(idx) {
+        db.getSongURI = function(idx) {
             var fileEntry = db.fileEntries[idx];
             var fileEntryLength = stream.getUint32(fileEntry.trackPos, true);
             var filename = readString(stream, fileEntry.trackPos + 4, fileEntryLength);
-            return rootFolder + fileEntry.path + '/' + filename;
+            return rootURI + fileEntry.path + '/' + filename;
         };
 
         return db;

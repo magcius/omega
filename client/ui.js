@@ -357,10 +357,6 @@
         this.elem = this._toplevel;
     }
 
-    function filenameToURI(filename) {
-        return "file:///" + filename.replace(/\\/g, '/');
-    }
-
     function Driver(library) {
         this.library = library;
         this.player = document.createElement('audio');
@@ -396,8 +392,7 @@
 
         this.emit('song-changed');
 
-        var filename = this.library.getSongFilename(songID);
-        this.player.src = filenameToURI(filename);
+        this.player.src = this.library.getSongURI(songID);
     };
     Driver.prototype._setSong = function(songID, forcePlaying) {
         var shouldPlay = !this.player.paused || forcePlaying;

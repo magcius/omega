@@ -33,6 +33,11 @@
     Library.prototype.getSongFilename = function(songID) {
         return this.$data.getSongFilename(songID);
     };
+    Library.prototype.getContextForName = function(contextName) {
+        for (var i = 0; i < this._contexts.length; i++)
+            if (this._contexts[i].title == contextName)
+                return this._contexts[i];
+    };
 
     // Returns N items around i inside L. The returned
     // list is always of size N*2+1, with the middle item

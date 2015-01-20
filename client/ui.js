@@ -105,6 +105,11 @@
         this.elem = this._toplevel;
     }
     ContextSwitcher.prototype._getSwitcher = function(context) {
+        if (!context)
+            return null;
+        return this._switcherItems[context.title];
+    };
+    ContextSwitcher.prototype._ensureSwitcher = function(context) {
         var title = context.title;
 
         if (this._switcherItems[title])
@@ -117,6 +122,8 @@
             this._driver.setContext(context);
         }.bind(this));
         this._switcherItems[title] = elem;
+        if (context == this._context)
+            elem.classList.add('active');
         return elem;
     };
     ContextSwitcher.prototype._songChanged = function() {
@@ -126,16 +133,19 @@
         var songID = this._driver.getSong();
         var contexts = this._library.getValidContexts(songID);
         contexts.forEach(function(c) {
-            var elem = this._getSwitcher(c);
+            var elem = this._ensureSwitcher(c);
             this._switchersElem.appendChild(elem);
         }.bind(this));
     };
     ContextSwitcher.prototype._contextChanged = function() {
-        if (this._context)
-            this._switcherItems[this._context.title].classList.remove('active');
-
+        var sw;
+        sw = this._getSwitcher(this._context);
+        if (sw)
+            sw.classList.remove('active');
         this._context = this._driver.getContext();
-        this._switcherItems[this._context.title].classList.add('active');
+        sw = this._getSwitcher(this._context);
+        if (sw)
+            sw.classList.add('active');
     };
 
     // Context Display
@@ -375,12 +385,13 @@
             return;
 
         this._songID = songID;
-        this.emit('song-changed');
 
         // If we don't have a valid context, pick the first one. It should
         // always be "artists".
         if (!this._context)
             this.setContext(this.library.getValidContexts(songID)[0]);
+
+        this.emit('song-changed');
 
         var filename = this.library.getSongFilename(songID);
         this.player.src = filenameToURI(filename);
@@ -418,8 +429,36 @@
     Driver.prototype.nextSong = function() {
         this._setSong(this._context.next(this._songID), true);
     };
-
     Signals.addSignalMethods(Driver.prototype);
+
+    function NavigationManager(driver) {
+        this._driver = driver;
+
+        this._driver.connect('song-changed', this._updateHash.bind(this));
+        this._driver.connect('context-changed', this._updateHash.bind(this));
+        window.addEventListener('onhashchange', this._onHashChange.bind(this));
+
+        if (window.location.hash)
+            this._onHashChange();
+        else
+            this._driver.setSong(0);
+    }
+    NavigationManager.prototype._updateHash = function() {
+        var song = this._driver.getSong();
+        var context = this._driver.getContext();
+        window.location.hash = song + '/' + context.title;
+    };
+    NavigationManager.prototype._onHashChange = function() {
+        var hash = window.location.hash.slice(1);
+        var g = hash.split('/');
+        var songID = parseInt(g[0]);
+        var contextName = g[1];
+
+        var context = this._driver.library.getContextForName(contextName);
+        if (context && context.isValid(songID))
+            this._driver.setContext(context);
+        this._driver.setSong(songID);
+    };
 
     function fb2kLoaded(buffer) {
         var library = libraryFromFB2K(buffer);
@@ -458,7 +497,7 @@
             document.title = formatSongWindowTitle(songID);
         });
 
-        driver.setSong(0);
+        var navManager = new NavigationManager(driver);
     }
 
     function fetch(path) {

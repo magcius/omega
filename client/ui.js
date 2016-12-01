@@ -465,6 +465,8 @@
         var driver = new Driver(library);
         document.body.appendChild(driver.elem);
 
+        window.$driver = driver;
+
         driver.connect('song-changed', function() {
             function formatSongWindowTitle(songID) {
                 var library = driver.library;
